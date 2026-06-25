@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emil Post — the dominoes that no machine can solve</title>
+<meta name="description" content="LOGIKĒ · the modern foundations — Emil Post (1897–1954). He reached incompleteness and undecidability independently of Gödel and Turing (some of it earlier), built 'production systems' — string-rewriting rules that are Turing-complete — and devised the POST CORRESPONDENCE PROBLEM: a deceptively simple puzzle with dominoes that is provably UNDECIDABLE. Live: play the Post Correspondence Problem — stack dominoes so the top string equals the bottom; some instances solve, but no algorithm decides them all. Honest: Post published late and his priority is under-credited; his work underlies formal language theory. David Lee Wise, two-layer honest.">
+<style>
+  :root{--bg:#0c0f17;--panel:#121622;--panel2:#19202f;--edge:#2a3346;--ink:#ede6d6;--dim:#b3ad9a;--faint:#7c7660;
+    --ochre:#d9b66a;--ochre2:#f0d79a;--proof:#5ad1ff;--proof2:#a7e6ff;--one:#7fe0a0;--zero:#fb7185;--amber:#fbbf24;--ember:#fb923c;
+    --mono:'SFMono-Regular',ui-monospace,'Cascadia Code',Menlo,Consolas,monospace;--serif:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);line-height:1.58;background-image:radial-gradient(1100px 560px at 75% -10%,#1c2436 0%,transparent 55%),radial-gradient(900px 500px at 0% 100%,#14110a 0%,transparent 55%);}
+  .wrap{max-width:1000px;margin:0 auto;padding:44px 26px 90px}
+  header{border-bottom:1px solid var(--edge);padding-bottom:22px;margin-bottom:24px}
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--ochre);opacity:.95}
+  h1{font-family:Georgia,serif;font-size:38px;line-height:1.08;margin:.3em 0 .14em;font-weight:600}h1 em{color:var(--ochre2);font-style:italic}
+  .who{font-family:var(--mono);font-size:12px;color:var(--faint);letter-spacing:.04em}
+  .sub{color:var(--dim);font-size:16px;max-width:74ch;margin-top:14px}.sub b{color:var(--ink)}
+  .verdicts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:22px 0}@media(max-width:720px){.verdicts{grid-template-columns:1fr}}
+  .vc{border:1px solid var(--edge);border-radius:11px;padding:13px 15px;border-top-width:3px;background:rgba(18,22,34,.6)}
+  .vc .badge{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.12em}
+  .vc.s{border-top-color:var(--one)}.vc.s .badge{color:var(--one)} .vc.m{border-top-color:var(--amber)}.vc.m .badge{color:var(--amber)} .vc.f{border-top-color:var(--ember)}.vc.f .badge{color:var(--ember)}
+  .vc p{font-size:12px;color:var(--dim);margin:6px 0 0;line-height:1.45}.vc p b{color:var(--ink)}
+  section{margin:36px 0}
+  h2{font-size:13px;font-family:var(--mono);letter-spacing:.22em;text-transform:uppercase;color:var(--ochre2);border-left:2px solid var(--ochre);padding-left:11px;margin:0 0 6px}
+  .lede{color:var(--dim);font-size:15px;margin:0 0 18px;max-width:80ch}
+  .panel{background:linear-gradient(180deg,var(--panel),#0a0d14);border:1px solid var(--edge);border-radius:14px;padding:20px;box-shadow:0 24px 60px -40px #000}
+  .doms{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+  .dom{font-family:var(--mono);border:1px solid var(--edge);border-radius:8px;overflow:hidden;cursor:pointer;text-align:center;min-width:44px;background:#1a2030}
+  .dom:hover{border-color:var(--ochre)}
+  .dom .t{padding:5px 9px;color:var(--proof2);border-bottom:1px solid var(--edge)}
+  .dom .b{padding:5px 9px;color:var(--ochre2)}
+  .dom .i{font-size:9px;color:var(--faint);padding:1px 0;background:#0c1622}
+  .seqwrap{font-family:var(--mono);font-size:15px;background:#0c1622;border:1px solid var(--edge);border-radius:9px;padding:14px;overflow-x:auto;min-height:78px}
+  .row{display:flex;gap:0;white-space:nowrap}
+  .cell{padding:3px 2px}.cell.t{color:var(--proof2)}.cell.b{color:var(--ochre2)}
+  .match{color:var(--one)}.nomatch{color:var(--dim)}
+  .status{font-family:var(--mono);font-size:13px;text-align:center;margin-top:10px;min-height:22px}
+  .status b.win{color:var(--one)}
+  .note{color:var(--dim);font-size:13.5px;border-left:2px solid var(--edge);padding-left:13px;margin:16px 0 0}.note b{color:var(--ink)}
+  .thm{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}@media(max-width:620px){.thm{grid-template-columns:1fr}}
+  .tm{border:1px solid var(--edge);border-radius:10px;padding:13px 15px;background:rgba(0,0,0,.14)}.tm b{color:var(--ochre2);font-family:var(--mono);font-size:11px}.tm p{font-size:13px;color:var(--dim);margin:6px 0 0}
+  footer{margin-top:44px;border-top:1px solid var(--edge);padding-top:18px;color:var(--faint);font-family:var(--mono);font-size:11px;line-height:1.7}
+  footer a,.bar2 a{color:var(--ochre)}.bar2{font-family:var(--mono);font-size:11.5px;margin-bottom:16px}.bar2 a{text-decoration:none;border-bottom:1px dotted #4a4126}
+  code{font-family:var(--mono);color:var(--ochre2);background:#15120a;padding:1px 5px;border-radius:5px}
+  blockquote{margin:14px 0;padding:10px 16px;border-left:3px solid var(--ochre);color:var(--ink);font-style:italic;font-size:15px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="bar2"><a href="https://davidwise01.github.io/ud0/">◄ UD0</a> &nbsp; <a href="https://davidwise01.github.io/haskell-curry/">← Curry</a> &nbsp; LOGIKĒ · the modern foundations</div>
+<header>
+  <div class="kicker">LOGIKĒ · the modern foundations · undecidability</div>
+  <h1>Emil <em>Post</em></h1>
+  <div class="who">1897 – 1954 · Augustów, Poland &amp; New York · City College &amp; Columbia · production systems &amp; the correspondence problem</div>
+  <div class="sub">Emil Post is the great <em>almost-first</em> of this lineage. Working alone in New York in the 1920s, he reached the core of [[kurt-godel]]'s incompleteness and [[alan-turing]]'s undecidability — <em>before</em> either — but, plagued by illness and a cautious editor, he didn't publish in time, and the credit went elsewhere. What is unquestionably his: <b>production systems</b> — the idea that all of computation is just <em>rewriting strings by rules</em>, a model as powerful as the Turing machine; and a single, devilish puzzle that became the workhorse for proving things <em>impossible</em>. The <b>Post Correspondence Problem</b>: you're given a set of dominoes, each with a string on top and a string on the bottom; can you lay some of them in a row so the top reads the same as the bottom? It sounds like a game. It is <b>undecidable</b> — no algorithm can solve it in general.</div>
+</header>
+<div class="verdicts">
+  <div class="vc s"><span class="badge">✓ STRONG</span><p><b>Foundational and exact.</b> Post's production/rewriting systems are a complete model of computation; the Post Correspondence Problem is provably undecidable and is the standard tool for proving <em>other</em> problems undecidable across computer science.</p></div>
+  <div class="vc m"><span class="badge">◐ THE PRIORITY HE LOST</span><p><b>First, but not in print.</b> Post anticipated Gödel's incompleteness (c. 1921) and the Turing-machine idea, but did not publish in time. His "anticipation" is real and acknowledged now — the formal credit, fairly, went to those who published.</p></div>
+  <div class="vc f"><span class="badge">◔ A LIFE OF OBSTACLES</span><p><b>Worked against the odds.</b> Post lost an arm as a child, battled severe bipolar disorder his whole career, taught a heavy load at City College, and died at 57. The work survived conditions that would have ended most.</p></div>
+</div>
+
+<section>
+  <h2>I · Play the Post Correspondence Problem</h2>
+  <p class="lede">Each <b>domino</b> has a top string and a bottom string. Click dominoes to lay them in a row; the machine concatenates all the tops and all the bottoms. <b>You win</b> when the top string exactly equals the bottom string (and you've used at least one). Try it — some instances have a solution hiding in them, others have none, and there is <em>no general method</em> to tell which.</p>
+  <div class="panel">
+    <div class="doms" id="doms"></div>
+    <div class="seqwrap"><div class="row" id="topRow"></div><div class="row" id="botRow"></div></div>
+    <div class="status" id="status"></div>
+    <div class="controls" style="display:flex;gap:8px;margin-top:12px"><button id="undo">undo</button><button id="clear">clear</button><button id="solve">let Post solve it ▸</button></div>
+    <div class="note">When the top and bottom finally read the same string, you've found a <b>correspondence</b>. The catch — Post's theorem — is that deciding <em>whether any sequence works</em> is <b>undecidable</b>: you can search (the "solve" button runs a bounded search), and if a short solution exists you'll find it, but no algorithm can always answer "no, there is none" in finite time. ⚑ It's [[alan-turing]]'s halting problem wearing a child's puzzle: the simplest-looking question — can these dominoes line up? — has no mechanical answer, which is exactly why PCP is the favourite tool for proving that <em>grammar ambiguity</em>, <em>program equivalence</em>, and a hundred other problems are impossible too.</div>
+  </div>
+  <blockquote>"Solvability of a problem … is itself a problem that may be unsolvable." <span style="color:var(--faint);font-style:normal;font-size:12px">— in the spirit of Emil Post</span></blockquote>
+</section>
+
+<section>
+  <h2>II · Rewriting is everything</h2>
+  <div class="thm">
+    <div class="tm"><b>PRODUCTION SYSTEMS</b><p>Post's model of computation: a set of rules that rewrite strings of symbols. Apply rules until you stop. That's it — and it's exactly as powerful as a Turing machine. Computation as pure <em>pattern replacement</em>.</p></div>
+    <div class="tm"><b>THE ANTICIPATION (c. 1921)</b><p>Years before Gödel and Turing, Post saw that such systems could express their own limits — that some questions about them must be undecidable, and that no formal system can be both complete and consistent. He glimpsed the whole landscape early.</p></div>
+  </div>
+  <p class="lede" style="margin-top:16px">Post's deepest idea is that <b>computation is rewriting</b>. Forget tapes and heads and λ's: give yourself strings of symbols and rules that say "replace this pattern with that one," and you can compute anything computable. This is the ancestor of every <b>formal grammar</b> (how programming languages are parsed), every <b>term-rewriting system</b>, and the production rules of classic AI. And because his systems could describe <em>themselves</em>, he ran straight into the same wall as everyone else in this lineage — incompleteness and undecidability — only earlier and more obscurely. The Post Correspondence Problem is the crystalline residue of that encounter: a problem so simple a child could play it, so deep that no machine can ever master it. ⚑ The man who saw the limits first, and turned them into a puzzle the whole field still uses. [[alan-turing]]'s machine, [[alonzo-church]]'s λ, [[haskell-curry]]'s combinators, and Post's rewriting are four roads to one place.</p>
+</section>
+
+<section>
+  <h2>III · The first-comer who finished last</h2>
+  <p class="note" style="border-color:var(--amber)"><b style="color:var(--amber)">Gate kept on.</b> The mathematics is <b>first-rank and exact</b>: production (rewriting) systems are a complete model of computation, the Post Correspondence Problem is rigorously undecidable, and it is the everyday instrument for proving undecidability throughout formal-language theory and verification. The honest centre of Post's story is <b>priority</b>. In the early 1920s, alone, he developed normal/production systems, recognised that they could encode their own decision problems, and concluded that there must be <em>unsolvable</em> problems and that no formal system could be complete and consistent — anticipating [[kurt-godel]] (1931) and [[alan-turing]] (1936). But his health, his teaching load, and his own perfectionism kept the work unpublished until far too late; the formal credit went, properly, to those who published first, and Post himself was scrupulous about acknowledging that. It is one of the most poignant near-misses in the history of thought — a man who saw the entire modern theory of computation in outline before anyone else and could not get it into print. He also gave us many-valued "Post logics" and the foundational "Post's problem" on degrees of unsolvability. He lost an arm at thirteen, lived with severe bipolar disorder, taught devotedly at City College, and died of a heart attack at 57, shortly after electroshock treatment. The credit was late; the work was early; both are true. ⚑ [[haskell-curry]] ← · next → Wittgenstein."</p>
+</section>
+
+<footer>
+  EMIL POST · LOGIKĒ · the modern foundations · two-layer honest<br>
+  live Post Correspondence Problem (stack dominoes so top string = bottom string; a bounded solver finds short matches — verified a known solvable instance; deciding solvability in general is UNDECIDABLE)<br>
+  production / string-rewriting systems = a Turing-complete model · anticipated incompleteness &amp; undecidability (c. 1921) · the PCP &amp; Post's problem · many-valued Post logics<br>
+  ← <a href="https://davidwise01.github.io/haskell-curry/">Curry</a> · next → <b>Wittgenstein</b> (the Tractatus &amp; the truth table)<br>
+  LOGIKĒ · the lineage of logical mathematics · governor David Lee Wise · CC-BY-ND-4.0
+</footer>
+</div>
+<script>
+"use strict";
+(function(){
+  const $=id=>document.getElementById(id);
+  // a known solvable PCP instance: dominoes (top,bottom)
+  const DOMS=[['a','baa'],['ab','aa'],['bba','bb']];
+  let seq=[];
+  function topStr(){ return seq.map(i=>DOMS[i][0]).join(''); }
+  function botStr(){ return seq.map(i=>DOMS[i][1]).join(''); }
+  function render(){
+    $('doms').innerHTML=DOMS.map((d,i)=>'<div class="dom" data-i="'+i+'"><div class="t">'+d[0]+'</div><div class="b">'+d[1]+'</div><div class="i">#'+(i+1)+'</div></div>').join('');
+    $('doms').querySelectorAll('.dom').forEach(e=>e.onclick=()=>{ seq.push(+e.dataset.i); render(); });
+    const t=topStr(), b=botStr();
+    // align char-by-char, mark matches
+    const L=Math.max(t.length,b.length);
+    let tr='', br='';
+    for(let k=0;k<L;k++){ const tc=t[k]||'·', bc=b[k]||'·'; const cls=(t[k]&&b[k]&&t[k]===b[k])?'match':'nomatch';
+      tr+='<span class="cell t '+cls+'">'+tc+'</span>'; br+='<span class="cell b '+cls+'">'+bc+'</span>'; }
+    $('topRow').innerHTML='<span style="color:var(--faint);margin-right:8px">top</span>'+(tr||'<span style="color:var(--faint)">— lay dominoes —</span>');
+    $('botRow').innerHTML='<span style="color:var(--faint);margin-right:8px">bot</span>'+br;
+    const win = seq.length>0 && t===b;
+    $('status').innerHTML = win ? '<b class="win">✓ MATCH — top equals bottom: "'+t+'"</b> · a correspondence found ('+seq.map(i=>'#'+(i+1)).join(' ')+')'
+      : (seq.length? (t.startsWith(b)||b.startsWith(t) ? 'still aligned — keep going ('+seq.length+' dominoes)' : '<span style="color:var(--zero)">mismatch — these can never line up; undo</span>')
+      : 'click dominoes to build a row');
+  }
+  function solve(){
+    // BFS for a matching sequence up to depth 8
+    const q=[[[],'','']]; let steps=0;
+    while(q.length && steps<200000){ steps++;
+      const [s,t,b]=q.shift();
+      if(s.length>0 && t===b){ seq=s; render(); $('status').innerHTML='<b class="win">✓ Post\'s search found a match:</b> '+s.map(i=>'#'+(i+1)).join(' ')+' → "'+t+'"'; return; }
+      if(s.length>=8) continue;
+      for(let i=0;i<DOMS.length;i++){ const nt=t+DOMS[i][0], nb=b+DOMS[i][1]; if(nt.startsWith(nb)||nb.startsWith(nt)) q.push([s.concat(i),nt,nb]); }
+    }
+    $('status').innerHTML='<span style="color:var(--amber)">no short solution found in the bounded search — and no algorithm can settle it in general</span>';
+  }
+  $('undo').onclick=()=>{ seq.pop(); render(); };
+  $('clear').onclick=()=>{ seq=[]; render(); };
+  $('solve').onclick=solve;
+  render();
+})();
+</script>
+</body>
+</html>
